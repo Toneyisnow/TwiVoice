@@ -71,7 +71,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using TwiVoice.Core.Render;
 
-namespace TwiVoice.Core.ResamplerDriver
+namespace TwiVoice.Core.ResamplerDrivers
 {
     public class DriverModels
     {

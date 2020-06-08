@@ -8,7 +8,7 @@ using NAudio.Wave.SampleProviders;
 using TwiVoice.Core.USTx;
 using OpenUtau.SimpleHelpers;
 /// using xxHashSharp;
-using static TwiVoice.Core.ResamplerDriver.DriverModels;
+using static TwiVoice.Core.ResamplerDrivers.DriverModels;
 
 namespace TwiVoice.Core.Render {
 

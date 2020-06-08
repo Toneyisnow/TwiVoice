@@ -1,4 +1,4 @@
-﻿using TwiVoice.Core.ResamplerDriver;
+﻿using TwiVoice.Core.ResamplerDrivers;
 using TwiVoice.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace TwiVoice.Core.ResamplerDriver.Factorys
+namespace TwiVoice.Core.ResamplerDrivers.Factorys
 {
     internal class ExeDriver : DriverModels, IResamplerDriver
     {

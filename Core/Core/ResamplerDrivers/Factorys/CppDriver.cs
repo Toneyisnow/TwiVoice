@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using TwiVoice.Core.ResamplerDriver;
+using TwiVoice.Core.ResamplerDrivers;
 
-namespace TwiVoice.Core.ResamplerDriver.Factorys
+namespace TwiVoice.Core.ResamplerDrivers.Factorys
 {
     internal class CppDriver : DriverModels, IResamplerDriver
     {

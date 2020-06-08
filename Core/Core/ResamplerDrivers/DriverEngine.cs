@@ -12,10 +12,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using TwiVoice.Core.ResamplerDriver;
-using TwiVoice.Core.ResamplerDriver.Factorys;
+using TwiVoice.Core.ResamplerDrivers.Factorys;
 
-namespace TwiVoice.Core.ResamplerDriver
+namespace TwiVoice.Core.ResamplerDrivers
 {
     internal interface IResamplerDriver
     {

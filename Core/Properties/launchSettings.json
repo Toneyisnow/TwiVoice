@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Core": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\charl\\source\\repos\\UtauTest\\sample\\sample.ust\" \"D:\\Temp\\ustoutput.wav\" \"C:\\Users\\charl\\source\\repos\\UtauTest\\sample\\resampler.exe\" \"C:\\Program Files (x86)\\UTAU\\voice\\Wan er VCVChinese\""
+    }
+  }
+}

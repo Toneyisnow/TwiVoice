@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using TwiVoice.Core.ResamplerDriver;
+using TwiVoice.Core.ResamplerDrivers;
 using TwiVoice.Core.USTx;
 using Serilog;
 

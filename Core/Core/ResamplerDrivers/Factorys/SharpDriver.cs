@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using TwiVoice.Core.ResamplerDriver;
+using TwiVoice.Core.ResamplerDrivers;
 
-namespace TwiVoice.Core.ResamplerDriver.Factorys
+namespace TwiVoice.Core.ResamplerDrivers.Factorys
 {
     internal class SharpDriver:DriverModels,IResamplerDriver
     {
