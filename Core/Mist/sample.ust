@@ -1,0 +1,110 @@
+[#SETTING]
+UstVersion=1.19
+Tempo=120.00
+Tracks=1
+ProjectName=New Project
+VoiceDir=C:\Program Files (x86)\UTAU\voice\Wan er VCVChinese
+OutFile=first.wav
+CacheDir=sample.cache
+Tool1=wavtool.exe
+Tool2=resampler.exe
+Mode2=True
+[#0000]
+Length=900
+Lyric=ai ye
+NoteNum=65
+PreUtterance=
+Intensity=75
+Modulation=0
+Moduration=0
+[#0001]
+Length=1380
+Lyric=o chui
+NoteNum=63
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-45
+PBW=89
+[#0002]
+Length=1080
+Lyric=a en
+NoteNum=66
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-48
+PBW=95
+[#0003]
+Length=960
+Lyric=ei zuo
+NoteNum=69
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-48
+PBW=95
+[#0004]
+Length=960
+Lyric=an xian
+NoteNum=63
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-57
+PBW=113
+[#0005]
+Length=600
+Lyric=u gang
+NoteNum=66
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-48
+PBW=95
+[#0006]
+Length=1320
+Lyric=a bai
+NoteNum=68
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-45
+PBW=89
+[#0007]
+Length=420
+Lyric=o xian
+NoteNum=63
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-54
+PBW=106
+[#0008]
+Length=1020
+Lyric=ei zui
+NoteNum=65
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-45
+PBW=89
+[#0009]
+Length=1500
+Lyric=i shuo
+NoteNum=62
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-48
+PBW=95
+[#0010]
+Length=900
+Lyric=u bai
+NoteNum=65
+Intensity=100
+Modulation=0
+Moduration=0
+PBS=-48
+PBW=95
+[#TRACKEND]
