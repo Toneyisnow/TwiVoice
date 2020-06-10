@@ -2,6 +2,7 @@
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using TwiVoice.Core.Formats;
@@ -141,6 +142,9 @@ namespace TwiVoice.Core
 
         private void WriteToFile(string outputFileFullPath)
         {
+            string folder = Directory.GetCurrentDirectory();
+            string fullPath = Path.Combine(folder, outputFileFullPath);
+
             MixingSampleProvider masterMix = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 1));
             foreach (var source in trackSources)
             {

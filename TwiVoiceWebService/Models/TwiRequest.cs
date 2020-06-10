@@ -22,6 +22,30 @@ namespace TwiVoiceWebService.Models
             get; set;
         }
 
+        public bool IsTest
+        {
+            get; set;
+        }
+
+        public string UstFile
+        {
+            get; set;
+        }
+
+        public string VoiceFolder
+        {
+            get; set;
+        }
+
+        public string ResamplerFile
+        {
+            get; set;
+        }
+
+        public string OutputWaveFile
+        {
+            get; set;
+        }
 
     }
 }

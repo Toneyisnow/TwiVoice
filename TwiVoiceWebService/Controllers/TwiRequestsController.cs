@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TwiVoice.Core;
 using TwiVoiceWebService.Data;
 using TwiVoiceWebService.Models;
 
@@ -83,7 +85,31 @@ namespace TwiVoiceWebService.Controllers
             //_context.TwiRequest.Add(twiRequest);
             //await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTwiRequest", new { id = twiRequest.Id }, twiRequest);
+            string folder = Directory.GetCurrentDirectory();
+            TwiRequest request = new TwiRequest { Id = twiRequest.Id, Name = folder };
+
+            /// System.Web.HttpContext.Current.Server.MapPath("~");
+            /// Sample: UtauTest.exe   
+
+            string ustFileFullPath = @"C:\Users\charl\source\repos\UtauTest\sample\sample.ust";
+            string outputFullPath = @"ustoutput.wav";
+            string resamplerFullPath = @"C:\Program Files (x86)\UTAU\resampler.exe";
+            string singerPath = @"C:\Program Files (x86)\UTAU\voice\Wan er VCVChinese";
+
+
+            ustFileFullPath = twiRequest.UstFile;
+            outputFullPath = twiRequest.OutputWaveFile;
+            resamplerFullPath = twiRequest.ResamplerFile;
+            singerPath = twiRequest.VoiceFolder;
+
+
+            if (!twiRequest.IsTest)
+            {
+                VoiceGenerator generator = new VoiceGenerator(ustFileFullPath, resamplerFullPath, singerPath);
+                generator.ConvertUstToWave(outputFullPath);
+            }
+
+            return CreatedAtAction("GetTwiRequest", new { id = twiRequest.Id, name = "created" }, request);
         }
 
         // DELETE: api/TwiRequests/5
