@@ -24,6 +24,8 @@ namespace TwiVoice.Core.USTx
 
         public string Pbs;
         public string Pbw;
+        public string Pby;
+        public string Pbm;
 
         public int EndTick { get { return PosTick + DurTick; } }
 

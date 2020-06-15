@@ -39,6 +39,12 @@ namespace TwiVoice.Core
             this.resamplerFullPath = resamplerFullPath;
         }
 
+        public VoiceGenerator(UProject uProject, string resamplerFullPath)
+        {
+            this.uProject = uProject;
+            this.resamplerFullPath = resamplerFullPath;
+        }
+
         /// <summary>
         /// 
         /// 

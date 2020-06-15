@@ -12,8 +12,8 @@ namespace TwiVoice.Core.Formats
 {
     public static class Ust
     {
-        private enum UstVersion { Early, V1_0, V1_1, V1_2, Unknown };
-        private enum UstBlock { Version, Setting, Note, Trackend, None };
+        public enum UstVersion { Early, V1_0, V1_1, V1_2, Unknown };
+        public enum UstBlock { Version, Setting, Note, Trackend, None };
 
         private const string versionTag = "[#VERSION]";
         private const string settingTag = "[#SETTING]";
@@ -215,11 +215,13 @@ namespace TwiVoice.Core.Formats
                 if (line.StartsWith("PBY="))
                 {
                     pby = line.Trim().Replace("PBY=", string.Empty);
+                    note.Pby = pby;
                 }
 
                 if (line.StartsWith("PBM="))
                 {
                     pbm = line.Trim().Replace("PBM=", string.Empty);
+                    note.Pbm = pbm;
                 }
             }
 
