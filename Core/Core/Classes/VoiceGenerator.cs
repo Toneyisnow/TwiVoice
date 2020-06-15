@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using TwiVoice.Core.Common;
 using TwiVoice.Core.Formats;
 using TwiVoice.Core.Render;
 using TwiVoice.Core.ResamplerDrivers;
@@ -48,7 +49,7 @@ namespace TwiVoice.Core
         /// <param name="output"></param>
         public void ConvertUstToWave(string output)
         {
-            Console.WriteLine("Start ConvertUstToWave.");
+            Logger.Instance.Information("Start ConvertUstToWave.");
 
             outputFullPath = output;
 
@@ -65,7 +66,7 @@ namespace TwiVoice.Core
             //Monitor.Wait(lockComplete);
             waitHandle.WaitOne(10000);
 
-            Console.WriteLine("Complete ConvertUstToWave.");
+            Logger.Instance.Information("Complete ConvertUstToWave.");
         }
 
         private void BuildAudio(UProject project, string resamplerFullPath)
@@ -75,6 +76,8 @@ namespace TwiVoice.Core
             {
                 trackSources.Add(new TrackSampleProvider() { Volume = DecibelToVolume(track.Volume) });
             }
+
+            Logger.Instance.Information("BuildAudio. Parts count:" + project.Parts.Count);
 
             pendingParts = project.Parts.Count;
             foreach (UPart part in project.Parts)
@@ -95,10 +98,15 @@ namespace TwiVoice.Core
                 else
                 {
                     var singer = project.Tracks[part.TrackNo].Singer;
+                    Logger.Instance.Information("BuildAudio. Singer:" + singer.DisplayName);
+
                     if (singer != null && singer.Loaded)
                     {
                         System.IO.FileInfo ResamplerFile = new System.IO.FileInfo(resamplerFullPath);
                         IResamplerDriver engine = ResamplerDriver.LoadEngine(ResamplerFile.FullName);
+
+                        Logger.Instance.Information("Begin BuildVoicePartAudio.");
+
                         BuildVoicePartAudio(part as UVoicePart, project, engine);
                     }
                     else lock (lockObject) { pendingParts--; }
@@ -113,7 +121,7 @@ namespace TwiVoice.Core
 
         private void BuildVoicePartAudio(UVoicePart part, UProject project, IResamplerDriver engine)
         {
-            Console.WriteLine("Start BuildVoicePartAudio");
+            Logger.Instance.Information("Start BuildVoicePartAudio");
             ResamplerInterface ri = new ResamplerInterface();
             ri.ResamplePart(part, project, engine, (o) => { BuildVoicePartDone(o, part, project); });
 
@@ -121,7 +129,7 @@ namespace TwiVoice.Core
 
         private void BuildVoicePartDone(SequencingSampleProvider source, UPart part, UProject project)
         {
-            Console.WriteLine("Start BuildVoicePartAudio");
+            Logger.Instance.Information("Start BuildVoicePartDone");
             lock (lockObject)
             {
                 if (source != null)
@@ -142,6 +150,8 @@ namespace TwiVoice.Core
 
         private void WriteToFile(string outputFileFullPath)
         {
+            Logger.Instance.Information("Start WriteToFile");
+
             string folder = Directory.GetCurrentDirectory();
             string fullPath = Path.Combine(folder, outputFileFullPath);
 
@@ -163,7 +173,6 @@ namespace TwiVoice.Core
 
             //mutex.ReleaseMutex();
             waitHandle.Set();
-            
         }
 
         private static float DecibelToVolume(double db)

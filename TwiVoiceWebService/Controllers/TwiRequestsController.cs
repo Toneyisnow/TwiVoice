@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using TwiVoice.Core;
+using TwiVoice.Core.Formats;
+using TwiVoice.Core.USTx;
 using TwiVoiceWebService.Data;
 using TwiVoiceWebService.Models;
 
@@ -97,20 +100,45 @@ namespace TwiVoiceWebService.Controllers
             string singerPath = @"C:\Program Files (x86)\UTAU\voice\Wan er VCVChinese";
 
 
-            ustFileFullPath = twiRequest.UstFile;
-            outputFullPath = twiRequest.OutputWaveFile;
-            resamplerFullPath = twiRequest.ResamplerFile;
-            singerPath = twiRequest.VoiceFolder;
+            //// ustFileFullPath = twiRequest.RequestBody.Input.UstFile;
+            outputFullPath = twiRequest.RequestBody.OutputWaveFile;
+            resamplerFullPath = twiRequest.RequestBody.Input.Setting.ResamplerFile;
+            singerPath = twiRequest.RequestBody.Input.Setting.SingerName;
 
 
-            if (!twiRequest.IsTest)
+            var log = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File(@"C:\inetpub\wwwroot\twivoice\log.txt")
+                .CreateLogger();
+
+            log.Information("Starting to generate: file=" + outputFullPath);
+
+
+            // Convert UST to JSON
+            var ustFile = Ust.Load(ustFileFullPath, singerPath);
+
+
+            
+            TwiVoice.Core.Common.Logger.SetLogger(log);
+            if (!twiRequest.RequestBody.IsTest)
             {
-                VoiceGenerator generator = new VoiceGenerator(ustFileFullPath, resamplerFullPath, singerPath);
-                generator.ConvertUstToWave(outputFullPath);
+                try
+                {
+                    VoiceGenerator generator = new VoiceGenerator(ustFileFullPath, resamplerFullPath, singerPath);
+                    log.Information("Begin ConvertUstToWave");
+                    generator.ConvertUstToWave(outputFullPath);
+                    log.Information("End ConvertUstToWave");
+
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Generator error: " + ex.ToString());
+                }
             }
 
             return CreatedAtAction("GetTwiRequest", new { id = twiRequest.Id, name = "created" }, request);
         }
+
 
         // DELETE: api/TwiRequests/5
         [HttpDelete("{id}")]
@@ -132,5 +160,6 @@ namespace TwiVoiceWebService.Controllers
         {
             return _context.TwiRequest.Any(e => e.Id == id);
         }
+
     }
 }

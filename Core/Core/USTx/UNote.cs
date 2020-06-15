@@ -22,6 +22,9 @@ namespace TwiVoice.Core.USTx
         public bool Error = false;
         public bool Selected = false;
 
+        public string Pbs;
+        public string Pbw;
+
         public int EndTick { get { return PosTick + DurTick; } }
 
         private UNote() {

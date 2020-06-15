@@ -1,0 +1,2 @@
+2020-06-12 17:35:04.141 -07:00 [INF] Starting to generate: file=D:\temp\ustoutput.wav
+2020-06-12 17:37:37.746 -07:00 [INF] Starting to generate: file=D:\temp\ustoutput.wav

@@ -6,6 +6,7 @@ using System.IO;
 
 using TwiVoice.Core.USTx;
 using OpenUtau.SimpleHelpers;
+using System.Runtime.CompilerServices;
 
 namespace TwiVoice.Core.Formats
 {
@@ -199,10 +200,27 @@ namespace TwiVoice.Core.Formats
                     if (pts.Count() > 5) note.Expressions["decay"].Data = 100 - (int)double.Parse(pts[5]);
                 }
                 if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibrato, line.Trim().Replace("VBR=", string.Empty));
-                if (line.StartsWith("PBS=")) pbs = line.Trim().Replace("PBS=", string.Empty);
-                if (line.StartsWith("PBW=")) pbw = line.Trim().Replace("PBW=", string.Empty);
-                if (line.StartsWith("PBY=")) pby = line.Trim().Replace("PBY=", string.Empty);
-                if (line.StartsWith("PBM=")) pbm = line.Trim().Replace("PBM=", string.Empty);
+                if (line.StartsWith("PBS="))
+                {
+                    pbs = line.Trim().Replace("PBS=", string.Empty);
+                    note.Pbs = pbs;
+                }
+
+                if (line.StartsWith("PBW="))
+                {
+                    pbw = line.Trim().Replace("PBW=", string.Empty);
+                    note.Pbw = pbw;
+                }
+
+                if (line.StartsWith("PBY="))
+                {
+                    pby = line.Trim().Replace("PBY=", string.Empty);
+                }
+
+                if (line.StartsWith("PBM="))
+                {
+                    pbm = line.Trim().Replace("PBM=", string.Empty);
+                }
             }
 
             if (pbs != string.Empty)
@@ -213,13 +231,14 @@ namespace TwiVoice.Core.Formats
                 if (pbs.Contains(';'))
                 {
                     pts.Add(new PitchPoint(double.Parse(pbs.Split(new[] { ';' })[0]), double.Parse(pbs.Split(new[] { ';' })[1])));
-                        note.PitchBend.SnapFirst = false;
+                    note.PitchBend.SnapFirst = false;
                 }
                 else
                 {
                     pts.Add(new PitchPoint(double.Parse(pbs), 0));
                     note.PitchBend.SnapFirst = true;
                 }
+
                 double x = pts.First().X;
                 if (pbw != string.Empty)
                 {

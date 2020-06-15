@@ -7,6 +7,7 @@ using System.Linq;
 using TwiVoice.Core.ResamplerDrivers;
 using TwiVoice.Core.USTx;
 using Serilog;
+using TwiVoice.Core.Common;
 
 namespace TwiVoice.Core.Render {
 
@@ -46,7 +47,7 @@ namespace TwiVoice.Core.Render {
                 //// DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format(string.Empty)));
                 resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
             } catch (Exception ex) {
-                Log.Error(ex, "Error while resampling.");
+                Logger.Instance.Error(ex, "Error while resampling.");
                 resampleDoneCallback(null);
             }
         }
@@ -55,7 +56,7 @@ namespace TwiVoice.Core.Render {
             var renderItems = new List<RenderItem>();
             var watch = new Stopwatch();
             watch.Start();
-            Log.Information("Resampling start.");
+            Logger.Instance.Information("Resampling start.");
             lock (part) {
                 var cacheDir = PathManager.Inst.GetCachePath(project.FilePath);
                 var cacheFiles = Directory.EnumerateFiles(cacheDir).ToArray();
@@ -69,7 +70,7 @@ namespace TwiVoice.Core.Render {
                 foreach (var note in part.Notes) {
                     foreach (var phoneme in note.Phonemes) {
                         if (string.IsNullOrEmpty(phoneme.Oto.File)) {
-                            Log.Warning($"Cannot find phoneme in note {note.Lyric}");
+                            Logger.Instance.Warning($"Cannot find phoneme in note {note.Lyric}");
                             continue;
                         }
 
@@ -97,7 +98,7 @@ namespace TwiVoice.Core.Render {
                 }
             }
             watch.Stop();
-            Log.Information($"Resampling end, total time {watch.Elapsed}");
+            Logger.Instance.Information($"Resampling end, total time {watch.Elapsed}");
             return renderItems;
         }
     }
