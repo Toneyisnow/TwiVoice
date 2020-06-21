@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using TwiVoice.Core;
+using TwiVoice.Core.Common;
 using TwiVoice.Core.Formats;
 using TwiVoice.Core.USTx;
 using TwiVoiceWebService.Data;
@@ -88,6 +89,59 @@ namespace TwiVoiceWebService.Controllers
             //_context.TwiRequest.Add(twiRequest);
             //await _context.SaveChangesAsync();
 
+            
+            TwiConfig config = TwiConfig.LoadFromFile();
+            var log = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File(@"C:\inetpub\wwwroot\twivoice\log.txt")
+                .CreateLogger();
+            TwiVoice.Core.Common.Logger.SetLogger(log);
+
+            string outputFileName = string.Empty;
+            if (string.IsNullOrEmpty(twiRequest.Request.OutputFileName))
+            {
+                string ran = Guid.NewGuid().ToString().Substring(0, 3);
+                string time = DateTime.Now.ToString("yyyyMMddHHmm");
+                outputFileName = string.Format(@"Output_{0}_{1}.wav", time, ran);
+            }
+            else
+            {
+                outputFileName = twiRequest.Request.OutputFileName;
+            }
+
+            string outputFileFullPath = Path.Combine(config.OutputFolderPath, outputFileName);
+
+            UJson uJson = twiRequest.Request.Input;
+            UProject uProject = uJson.ToUProject();
+            
+            if (!twiRequest.Request.IsTest)
+            {
+                string resamplerFullPath = Path.Combine(config.ResamplersFolderPath, uJson.Setting.ResamplerFile);
+                VoiceGenerator generator = new VoiceGenerator(uProject, resamplerFullPath);
+                
+                await Task.Run(() => generator.ConvertUstToWave(outputFileFullPath));
+                log.Information("Finished.");
+            }
+
+            TwiRequest request = new TwiRequest { Id = twiRequest.Id, Name = twiRequest.Name };
+            request.Response = new TwiResponseBody();
+            request.Response.Result = 0;
+            request.Response.Message = "Completed";
+            request.Response.OutputFileName = string.Format(@"/files/{0}", outputFileName);
+
+            return CreatedAtAction("GetTwiRequest", new { id = twiRequest.Id, name = "created" }, request);
+        }
+
+        // POST: api/TwiRequests
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // [HttpPost]
+        /*
+        public async Task<ActionResult<TwiRequest>> PostTwiRequest2(TwiRequest twiRequest)
+        {
+            //_context.TwiRequest.Add(twiRequest);
+            //await _context.SaveChangesAsync();
+
             string folder = Directory.GetCurrentDirectory();
             TwiRequest request = new TwiRequest { Id = twiRequest.Id, Name = folder };
 
@@ -118,7 +172,7 @@ namespace TwiVoiceWebService.Controllers
             var ustFile = Ust.Load(ustFileFullPath, singerPath);
 
 
-            
+
             TwiVoice.Core.Common.Logger.SetLogger(log);
             if (!twiRequest.RequestBody.IsTest)
             {
@@ -137,8 +191,7 @@ namespace TwiVoiceWebService.Controllers
             }
 
             return CreatedAtAction("GetTwiRequest", new { id = twiRequest.Id, name = "created" }, request);
-        }
-
+        }*/
 
         // DELETE: api/TwiRequests/5
         [HttpDelete("{id}")]

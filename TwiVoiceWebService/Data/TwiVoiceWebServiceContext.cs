@@ -15,5 +15,7 @@ namespace TwiVoiceWebService.Data
         }
 
         public DbSet<TwiVoiceWebService.Models.TwiRequest> TwiRequest { get; set; }
+
+        public DbSet<TwiVoiceWebService.Models.SampleModel> SampleModel { get; set; }
     }
 }

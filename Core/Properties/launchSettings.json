@@ -2,7 +2,7 @@
   "profiles": {
     "Core": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\Temp\\ust.json\" \"D:\\Temp\\json_out.wav\" \"C:\\Users\\charl\\source\\repos\\UtauTest\\sample\\resampler.exe\" \"C:\\Program Files (x86)\\UTAU\\voice\\Wan er VCVChinese\""
+      "commandLineArgs": "--jsontotxt \"D:\\Temp\\UtauTest\\yours_1.json\" \"D:\\Temp\\json_out.txt\""
     }
   }
 }

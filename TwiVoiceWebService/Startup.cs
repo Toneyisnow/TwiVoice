@@ -12,6 +12,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using TwiVoiceWebService.Data;
+using System.IO;
+using TwiVoiceWebService.Models;
+using Newtonsoft.Json;
 
 namespace TwiVoice
 {
@@ -41,6 +44,8 @@ namespace TwiVoice
                 app.UseDeveloperExceptionPage();
             }
 
+            //// ValidateTwiRequest();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -52,5 +57,18 @@ namespace TwiVoice
                 endpoints.MapControllers();
             });
         }
+
+        static void ValidateTwiRequest()
+        {
+            string jsonContent = string.Empty;
+            using (StreamReader reader = new StreamReader(@"D:\Temp\UtauTest\sample_request.json"))
+            {
+                jsonContent = reader.ReadToEnd();
+            }
+
+            TwiRequest request = JsonConvert.DeserializeObject<TwiRequest>(jsonContent);
+        }
+
+
     }
 }

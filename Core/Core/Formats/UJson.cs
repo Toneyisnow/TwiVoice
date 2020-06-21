@@ -13,13 +13,13 @@ namespace TwiVoice.Core.Formats
 {
     public class UJson
     {
-        [JsonProperty(PropertyName = "setting")]
+        //// [JsonProperty(PropertyName = "setting")]
         public UJsonSetting Setting
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "tracks")]
+        //// [JsonProperty(PropertyName = "tracks")]
         public List<UJsonTrack> Tracks
         {
             get; set;
@@ -110,6 +110,7 @@ namespace TwiVoice.Core.Formats
             var singer = UtauSoundbank.LoadSinger(singerFolder);
             project.Singers.Add(singer);
             project.Tracks[0].Singer = singer;
+
             
             int currentTick = 0;
             foreach (var note in this.Tracks[0].Notes)
@@ -147,7 +148,7 @@ namespace TwiVoice.Core.Formats
             var pby = jsonNote.Pby;
             var pbm = jsonNote.Pbm;
 
-            if (jsonNote.Pbs != string.Empty)
+            if (pbs != string.Empty)
             {
                 var pts = uNote.PitchBend.Data as List<PitchPoint>;
                 pts.Clear();
@@ -197,31 +198,31 @@ namespace TwiVoice.Core.Formats
     /// </summary>
     public class UJsonSetting
     {
-        [JsonProperty(PropertyName = "twi_version")]
+        //// [JsonProperty(PropertyName = "twi_version")]
         public string Version
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "tempo")]
+        //// [JsonProperty(PropertyName = "tempo")]
         public int Tempo
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "tracks")]
+        //// [JsonProperty(PropertyName = "tracks")]
         public int TrackCount
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "singer_name")]
+        //// [JsonProperty(PropertyName = "singer_name")]
         public string SingerName
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "resampler_file")]
+        //// [JsonProperty(PropertyName = "resampler_file")]
         public string ResamplerFile
         {
             get; set;
@@ -233,13 +234,13 @@ namespace TwiVoice.Core.Formats
     /// </summary>
     public class UJsonTrack
     {
-        [JsonProperty(PropertyName = "track_id")]
+        //// [JsonProperty(PropertyName = "track_id")]
         public int Id
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "notes")]
+        //// [JsonProperty(PropertyName = "notes")]
         public List<UJsonNote> Notes
         {
             get; set;
@@ -251,87 +252,87 @@ namespace TwiVoice.Core.Formats
     /// </summary>
     public class UJsonNote
     {
-        [JsonProperty(PropertyName = "note_index")]
+        //// [JsonProperty(PropertyName = "note_index")]
         public int Index
         {
             get; set;
         }
 
 
-        [JsonProperty(PropertyName = "length")]
+        //// [JsonProperty(PropertyName = "length")]
         public int Length
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "lyric")]
+        //// [JsonProperty(PropertyName = "lyric")]
         public string Lyric
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "note_num")]
+        //// [JsonProperty(PropertyName = "note_num")]
         public int NoteNum
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "intensity")]
+        //// [JsonProperty(PropertyName = "intensity")]
         public int Intensity
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "velocity")]
+        //// [JsonProperty(PropertyName = "velocity")]
         public int Velocity
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "voice_overlap")]
+        //// [JsonProperty(PropertyName = "voice_overlap")]
         public double VoiceOverlap
         {
             get; set;
         }
-        
 
-       [JsonProperty(PropertyName = "pre_utterance")]
+
+        //// [JsonProperty(PropertyName = "pre_utterance")]
         public string PreUtterance
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "modulation")]
+        //// [JsonProperty(PropertyName = "modulation")]
         public int Modulation
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "moduration")]
+        //// [JsonProperty(PropertyName = "moduration")]
         public int Moduration
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "pbs")]
+        //// [JsonProperty(PropertyName = "pbs")]
         public string Pbs
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "pbw")]
+        //// [JsonProperty(PropertyName = "pbw")]
         public string Pbw
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "pby")]
+        //// [JsonProperty(PropertyName = "pby")]
         public string Pby
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "pbm")]
+        //// [JsonProperty(PropertyName = "pbm")]
         public string Pbm
         {
             get; set;

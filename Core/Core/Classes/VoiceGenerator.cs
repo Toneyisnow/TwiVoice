@@ -75,6 +75,28 @@ namespace TwiVoice.Core
             Logger.Instance.Information("Complete ConvertUstToWave.");
         }
 
+        public List<UOto> ListAllOtos()
+        {
+            Logger.Instance.Information("Start ListAllOtos.");
+
+            PartManager partManager = new PartManager(uProject);
+            partManager.UpdatePart(uProject.Parts[0] as UVoicePart);
+
+
+            UVoicePart part = uProject.Parts[0] as UVoicePart;
+
+            List<UOto> otoList = new List<UOto>();
+            foreach(UNote note in part.Notes)
+            {
+                if (note.Phonemes != null && note.Phonemes.Count > 0)
+                {
+                    otoList.Add(note.Phonemes[0].Oto);
+                }
+            }
+
+            return otoList;
+        }
+
         private void BuildAudio(UProject project, string resamplerFullPath)
         {
             trackSources = new List<TrackSampleProvider>();
