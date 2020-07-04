@@ -2,7 +2,7 @@
   "profiles": {
     "Core": {
       "commandName": "Project",
-      "commandLineArgs": "--jsontotxt \"D:\\Temp\\UtauTest\\yours_1.json\" \"D:\\Temp\\json_out.txt\""
+      "commandLineArgs": "--jsontowav \"D:\\Temp\\UtauTest\\yours_1.json\" \"D:\\Temp\\json_out.wav\""
     }
   }
 }

@@ -14,7 +14,7 @@ namespace TwiVoice.Core.Render {
     internal class ResamplerInterface {
         private Action<SequencingSampleProvider> resampleDoneCallback;
 
-        public void ResamplePart(UVoicePart part, UProject project, IResamplerDriver engine, Action<SequencingSampleProvider> resampleDoneCallback) {
+        public void ResamplePartAsync(UVoicePart part, UProject project, IResamplerDriver engine, Action<SequencingSampleProvider> resampleDoneCallback) {
             this.resampleDoneCallback = resampleDoneCallback;
             var worker = new BackgroundWorker {
                 WorkerReportsProgress = true
@@ -23,6 +23,25 @@ namespace TwiVoice.Core.Render {
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerAsync(new Tuple<UVoicePart, UProject, IResamplerDriver>(part, project, engine));
+        }
+
+        public void ResamplePart(UVoicePart part, UProject project, IResamplerDriver engine, Action<SequencingSampleProvider> resampleDoneCallback)
+        {
+            List<RenderItem> renderItems = Render(part, project, engine);
+            try
+            {
+                var renderItemSampleProviders = new List<RenderItemSampleProvider>();
+                foreach (var item in renderItems)
+                {
+                    renderItemSampleProviders.Add(new RenderItemSampleProvider(item));
+                }
+                resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex, "Error while resampling.");
+                resampleDoneCallback(null);
+            }
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
@@ -94,6 +113,62 @@ namespace TwiVoice.Core.Render {
                         
                         
                         worker.ReportProgress(100 * ++i / count, $"Resampling \"{phoneme.Phoneme}\" {i}/{count}");
+                    }
+                }
+            }
+            watch.Stop();
+            Logger.Instance.Information($"Resampling end, total time {watch.Elapsed}");
+            return renderItems;
+        }
+
+        private List<RenderItem> Render(UVoicePart part, UProject project, IResamplerDriver engine)
+        {
+            var renderItems = new List<RenderItem>();
+            var watch = new Stopwatch();
+            watch.Start();
+            Logger.Instance.Information("Resampling start.");
+            lock (part)
+            {
+                var cacheDir = PathManager.Inst.GetCachePath(project.FilePath);
+                var cacheFiles = Directory.EnumerateFiles(cacheDir).ToArray();
+                int count = 0, i = 0;
+                foreach (var note in part.Notes)
+                {
+                    foreach (var phoneme in note.Phonemes)
+                    {
+                        count++;
+                    }
+                }
+
+                foreach (var note in part.Notes)
+                {
+                    foreach (var phoneme in note.Phonemes)
+                    {
+                        if (string.IsNullOrEmpty(phoneme.Oto.File))
+                        {
+                            Logger.Instance.Warning($"Cannot find phoneme in note {note.Lyric}");
+                            continue;
+                        }
+
+                        var item = new RenderItem(phoneme, part, project);
+
+                        // System.Diagnostics.Debug.WriteLine("Sound {0:x} resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                        if (engine != null)
+                        {
+                            var engineArgs = DriverModels.CreateInputModel(item, 0);
+                            var output = engine.DoResampler(engineArgs);
+                            item.Sound = MemorySampleProvider.FromStream(output);
+                            output.Dispose();
+                            renderItems.Add(item);
+                        }
+                        else
+                        {
+                            using (FileStream output = new FileStream(item.SourceFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                item.Sound = MemorySampleProvider.FromStream(output);
+                                renderItems.Add(item);
+                            }
+                        }
                     }
                 }
             }

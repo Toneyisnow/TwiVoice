@@ -33,6 +33,8 @@ namespace TwiVoice.Core
 
         private UProject uProject = null;
 
+        private bool writtedToFile = false;
+
         public VoiceGenerator(string ustFileFullPath, string resamplerFullPath, string singerPath)
         {
             uProject = Ust.Load(ustFileFullPath, singerPath);
@@ -64,13 +66,14 @@ namespace TwiVoice.Core
 
             //bool createdNew;
             //mutex = new Mutex(false, "TestSO27835942", out createdNew);
-            waitHandle = new AutoResetEvent(false);
+            //// waitHandle = new AutoResetEvent(false);
 
             //Monitor.Enter(lockComplete);
+            writtedToFile = false;
             BuildAudio(uProject, resamplerFullPath);
 
             //Monitor.Wait(lockComplete);
-            waitHandle.WaitOne(10000);
+            //// waitHandle.WaitOne(20000);
 
             Logger.Instance.Information("Complete ConvertUstToWave.");
         }
@@ -137,11 +140,18 @@ namespace TwiVoice.Core
 
                         BuildVoicePartAudio(part as UVoicePart, project, engine);
                     }
-                    else lock (lockObject) { pendingParts--; }
+                    else
+                    {
+
+                        lock (lockObject)
+                        {
+                            pendingParts--;
+                        }
+                    }
                 }
             }
 
-            if (pendingParts == 0)
+            if (pendingParts == 0 && !writtedToFile)
             {
                 WriteToFile(outputFullPath);
             }
@@ -152,7 +162,6 @@ namespace TwiVoice.Core
             Logger.Instance.Information("Start BuildVoicePartAudio");
             ResamplerInterface ri = new ResamplerInterface();
             ri.ResamplePart(part, project, engine, (o) => { BuildVoicePartDone(o, part, project); });
-
         }
 
         private void BuildVoicePartDone(SequencingSampleProvider source, UPart part, UProject project)
@@ -170,7 +179,7 @@ namespace TwiVoice.Core
                 pendingParts--;
             }
 
-            if (pendingParts == 0)
+            if (pendingParts == 0 && !writtedToFile)
             {
                 WriteToFile(outputFullPath);
             }
@@ -179,6 +188,7 @@ namespace TwiVoice.Core
         private void WriteToFile(string outputFileFullPath)
         {
             Logger.Instance.Information("Start WriteToFile");
+            writtedToFile = true;
 
             string folder = Directory.GetCurrentDirectory();
             string fullPath = Path.Combine(folder, outputFileFullPath);
@@ -200,7 +210,7 @@ namespace TwiVoice.Core
             WaveFileWriter.CreateWaveFile(outputFileFullPath, waveStream);
 
             //mutex.ReleaseMutex();
-            waitHandle.Set();
+            //// waitHandle.Set();
         }
 
         private static float DecibelToVolume(double db)
