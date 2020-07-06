@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace TwiVoice.Core.Common
 {
@@ -36,7 +37,7 @@ namespace TwiVoice.Core.Common
 
         public static TwiConfig LoadFromFile()
         {
-            using (StreamReader reader = new StreamReader(configFileName))
+            using (StreamReader reader = new StreamReader(GetConfigFile()))
             {
                 try
                 {
@@ -53,6 +54,25 @@ namespace TwiVoice.Core.Common
             }
         }
 
+        static string GetConfigFile()
+		{
+			bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            bool isMacOS = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+            bool isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            
+            if (isWindows) {
+                return "twi_config.json";
+            }
 
+            if (isMacOS) {
+                return "twi_config_darwin.json";
+            }
+
+            if (isLinux) {
+                return "twi_config_linux.json";
+            }
+
+            return "twi_config.json";
+        }
     }
 }
