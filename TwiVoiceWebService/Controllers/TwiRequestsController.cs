@@ -13,6 +13,8 @@ using TwiVoice.Core.Formats;
 using TwiVoice.Core.USTx;
 using TwiVoiceWebService.Data;
 using TwiVoiceWebService.Models;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace TwiVoiceWebService.Controllers
 {
@@ -20,82 +22,100 @@ namespace TwiVoiceWebService.Controllers
     [ApiController]
     public class TwiRequestsController : ControllerBase
     {
-        private readonly TwiVoiceWebServiceContext _context;
+        // private readonly TwiVoiceWebServiceContext _context;
+        private readonly ILogger<TwiRequestsController> _logger;
 
-        public TwiRequestsController(TwiVoiceWebServiceContext context)
+        // public TwiRequestsController(ILogger<TwiRequestsController> logger, TwiVoiceWebServiceContext context)
+        // {
+        //     _logger = logger;
+        //     _context = context;
+        // }
+
+        public TwiRequestsController(ILogger<TwiRequestsController> logger)
         {
-            _context = context;
+            _logger = logger;
         }
 
         // GET: api/TwiRequests
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<TwiRequest>>> GetTwiRequest()
+        // {
+        //     return await _context.TwiRequest.ToListAsync();
+        // }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TwiRequest>>> GetTwiRequest()
-        {
-            return await _context.TwiRequest.ToListAsync();
+        public string Hello() {
+            _logger.LogInformation("TwiRequestsController Hello");
+            return "hello world";
         }
 
         // GET: api/TwiRequests/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TwiRequest>> GetTwiRequest(Guid id)
-        {
-            var twiRequest = await _context.TwiRequest.FindAsync(id);
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<TwiRequest>> GetTwiRequest(Guid id)
+        // {
+        //     var twiRequest = await _context.TwiRequest.FindAsync(id);
 
-            if (twiRequest == null)
-            {
-                return NotFound();
-            }
+        //     if (twiRequest == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            return twiRequest;
-        }
+        //     return twiRequest;
+        // }
 
         // PUT: api/TwiRequests/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTwiRequest(Guid id, TwiRequest twiRequest)
-        {
-            if (id != twiRequest.Id)
-            {
-                return BadRequest();
-            }
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> PutTwiRequest(Guid id, TwiRequest twiRequest)
+        // {
+        //     if (id != twiRequest.Id)
+        //     {
+        //         return BadRequest();
+        //     }
 
-            _context.Entry(twiRequest).State = EntityState.Modified;
+        //     _context.Entry(twiRequest).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TwiRequestExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         if (!TwiRequestExists(id))
+        //         {
+        //             return NotFound();
+        //         }
+        //         else
+        //         {
+        //             throw;
+        //         }
+        //     }
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
 
         // POST: api/TwiRequests
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
+        [HttpPost(Name = "PostTwiRequest")]
         public async Task<ActionResult<TwiRequest>> PostTwiRequest(TwiRequest twiRequest)
         {
             //_context.TwiRequest.Add(twiRequest);
             //await _context.SaveChangesAsync();
 
-            
+            Stopwatch w = new Stopwatch();
+
+            w.Start();
+
+            _logger.LogInformation("TwiRequestsController PostTwiRequest");
+
             TwiConfig config = TwiConfig.LoadFromFile();
-            var log = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(@"C:\inetpub\wwwroot\twivoice\log.txt")
+                .WriteTo.File(@"/tmp/twi/log.txt")
                 .CreateLogger();
-            TwiVoice.Core.Common.Logger.SetLogger(log);
+            TwiVoice.Core.Common.Logger.SetLogger(logger);
 
             string outputFileName = string.Empty;
             if (string.IsNullOrEmpty(twiRequest.Request.OutputFileName))
@@ -113,14 +133,24 @@ namespace TwiVoiceWebService.Controllers
 
             UJson uJson = twiRequest.Request.Input;
             UProject uProject = uJson.ToUProject();
-            
+
+            logger.Information(uJson.ToString());
+
+            w.Stop();
+
+            _logger.LogInformation("First step elapsed={0}", w.Elapsed);
+
             if (!twiRequest.Request.IsTest)
             {
                 string resamplerFullPath = Path.Combine(config.ResamplersFolderPath, uJson.Setting.ResamplerFile);
                 VoiceGenerator generator = new VoiceGenerator(uProject, resamplerFullPath);
-                
+
+                w.Start();
                 await Task.Run(() => generator.ConvertUstToWave(outputFileFullPath));
-                log.Information("Finished.");
+                w.Stop();
+
+                _logger.LogInformation("Second step elapsed={0}", w.Elapsed);
+                logger.Information("Finished.");
             }
 
             TwiRequest request = new TwiRequest { Id = twiRequest.Id, Name = twiRequest.Name };
@@ -129,7 +159,7 @@ namespace TwiVoiceWebService.Controllers
             request.Response.Message = "Completed";
             request.Response.OutputFileName = string.Format(@"/files/{0}", outputFileName);
 
-            return CreatedAtAction("GetTwiRequest", new { id = twiRequest.Id, name = "created" }, request);
+            return CreatedAtAction("PostTwiRequest", new { id = twiRequest.Id, name = "created" }, request);
         }
 
         // POST: api/TwiRequests
@@ -194,25 +224,25 @@ namespace TwiVoiceWebService.Controllers
         }*/
 
         // DELETE: api/TwiRequests/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<TwiRequest>> DeleteTwiRequest(Guid id)
-        {
-            var twiRequest = await _context.TwiRequest.FindAsync(id);
-            if (twiRequest == null)
-            {
-                return NotFound();
-            }
+        // [HttpDelete("{id}")]
+        // public async Task<ActionResult<TwiRequest>> DeleteTwiRequest(Guid id)
+        // {
+        //     var twiRequest = await _context.TwiRequest.FindAsync(id);
+        //     if (twiRequest == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            _context.TwiRequest.Remove(twiRequest);
-            await _context.SaveChangesAsync();
+        //     _context.TwiRequest.Remove(twiRequest);
+        //     await _context.SaveChangesAsync();
 
-            return twiRequest;
-        }
+        //     return twiRequest;
+        // }
 
-        private bool TwiRequestExists(Guid id)
-        {
-            return _context.TwiRequest.Any(e => e.Id == id);
-        }
+        // private bool TwiRequestExists(Guid id)
+        // {
+        //     return _context.TwiRequest.Any(e => e.Id == id);
+        // }
 
     }
 }

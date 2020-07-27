@@ -32,8 +32,8 @@ namespace TwiVoice
         {
             services.AddControllers();
 
-            services.AddDbContext<TwiVoiceWebServiceContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("TwiVoiceWebServiceContext")));
+            // services.AddDbContext<TwiVoiceWebServiceContext>(options =>
+            //         options.UseSqlServer(Configuration.GetConnectionString("TwiVoiceWebServiceContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +46,7 @@ namespace TwiVoice
 
             //// ValidateTwiRequest();
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
