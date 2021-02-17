@@ -28,7 +28,7 @@ namespace TwiVoice.Core.Common
         {
             _log = new LoggerConfiguration()
                    .MinimumLevel.Debug()
-                   .WriteTo.File(@"C:\inetpub\wwwroot\twivoice\log.txt")
+                   .WriteTo.File(@"/tmp/twi/log.txt")
                    .CreateLogger();
 
         }

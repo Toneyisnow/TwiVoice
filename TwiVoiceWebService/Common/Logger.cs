@@ -29,7 +29,7 @@ namespace TwiVoiceWebService.Common
         {
             _log = new LoggerConfiguration()
                    .MinimumLevel.Debug()
-                   .WriteTo.File(@"C:\inetpub\wwwroot\twivoice\log_common.txt")
+                   .WriteTo.File(@"/tmp/twi/log_common.txt")
                    .CreateLogger();
 
         }
